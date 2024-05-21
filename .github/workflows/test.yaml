@@ -1,0 +1,14 @@
+name: Test
+on:
+  push:
+    branches: 
+      - "*"
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - docker build .
+      
