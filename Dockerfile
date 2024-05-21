@@ -1,2 +1,1 @@
-FROM python:3.12
-
+FROM ubuntu:24.04
