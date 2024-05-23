@@ -10,3 +10,4 @@ COPY src /src
 WORKDIR /src
 
 RUN pip install -r requirements.txt
+RUN python main.py
