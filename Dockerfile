@@ -1,6 +1,6 @@
 FROM ubuntu:24.04
 
-RUN apt install python3.12
+RUN apr update && apt install python3 -y
 RUN python --version
 
 COPY src /src
