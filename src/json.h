@@ -21,7 +21,9 @@ typedef struct json_array {
 } json_array;
 
 typedef struct json_object {
-
+    const char * offset;
+    json_value ** values;
+    size_t length;
 } json_object;
 
 typedef struct json_value {
