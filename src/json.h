@@ -21,18 +21,20 @@ typedef struct json_array {
 } json_array;
 
 typedef struct json_object {
-    const char * offset;
-    json_value ** values;
-    size_t length;
+
 } json_object;
 
 typedef struct json_value {
     json_type type;
-    union value {
+    union {
         bool boolean;
         json_string string;
         json_array array;
     };
 } json_value;
+
+size_t json_value_count(const json_string string);
+bool json_parse(const json_string string, json_value * output);
+
 
 #endif
