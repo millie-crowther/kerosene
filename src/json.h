@@ -40,8 +40,10 @@ typedef struct json_value {
     json_type type;
     union {
         bool boolean;
+        double number;
         json_string string;
         json_array array;
+        json_object object;
     };
 } json_value;
 
