@@ -47,7 +47,18 @@ typedef struct json_value {
     };
 } json_value;
 
-size_t json_value_count(const json_string string);
-bool json_parse(const json_string string, json_value * output);
+typedef struct json_document {
+    json_value * values;
+    size_t value_count;
+
+    json_object_key_pair * key_pairs;
+    size_t key_pair_count;
+
+    void * data_pointer;
+} json_document;
+
+
+bool json_document_parse(const json_string string, json_document * document);
+void json_document_destroy(json_document * document);
 
 #endif
