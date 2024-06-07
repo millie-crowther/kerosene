@@ -55,7 +55,7 @@ typedef struct json_document {
     void * data_pointer;
 } json_document;
 
-
+json_value * json_object_get(const json_object * object, const json_string string);
 bool json_document_parse(const json_string string, json_document * document);
 void json_document_destroy(json_document * document);
 
