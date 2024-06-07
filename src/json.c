@@ -25,3 +25,19 @@ uint64_t hash(const char * string, uint32_t length) {
 
     return hash;
 }
+
+bool string_equals(const json_string a, const json_string b){
+    return a.length == b.length && strncmp(a.string, b.string, a.length) == 0;
+}
+
+json_value * json_object_get(const json_object * object, const json_string string){
+    uint64_t index = hash(string.string, string.length) % JSON_OBJECT_BUCKETS_COUNT;
+    json_object_bucket bucket = object->buckets[index];
+    for (uint32_t i = 0; i < bucket.length; i++){
+        json_object_key_pair key_pair = bucket.key_pairs[i];
+        if (string_equals(&string, key_pair.key)){
+            return key_pair.value;
+        }
+    }
+    return nullptr;
+}
