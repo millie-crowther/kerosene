@@ -27,7 +27,7 @@ typedef struct json_object_key_pair {
 
 typedef struct json_object_bucket {
     json_object_key_pair * key_pairs;
-    size_t count;
+    size_t length;
 } json_object_bucket;
 
 #define JSON_OBJECT_BUCKETS_COUNT 32
