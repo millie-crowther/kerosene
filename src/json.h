@@ -49,10 +49,8 @@ typedef struct json_value {
 
 typedef struct json_document {
     json_value * values;
-    size_t value_count;
-
     json_object_key_pair * key_pairs;
-    size_t key_pair_count;
+    const char * string;
 
     void * data_pointer;
 } json_document;
