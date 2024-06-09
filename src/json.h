@@ -14,14 +14,16 @@ typedef enum json_type {
     JSON_TYPE_OBJECT
 } json_type;
 
+struct json_value;
+
 typedef struct json_array {
-    json_value * values;
+    struct json_value * values;
     uint32_t length;
 } json_array;
 
 typedef struct json_object_key_pair {
     string key;
-    json_value * value;
+    struct json_value * value;
 } json_object_key_pair;
 
 typedef struct json_object_bucket {
