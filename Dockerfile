@@ -8,6 +8,10 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 COPY src /src
 
 WORKDIR /src
+RUN cmake .
+RUN make
 
 RUN pip install -r requirements.txt
 RUN python main.py
+
+CMD ./simorgh
