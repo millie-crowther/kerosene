@@ -26,7 +26,7 @@ typedef struct json_token_regex {
     regex_t regex
 } json_token_regex;
 
-json_token_regular_expression regexes[JSON_TOKEN_TYPE_INVALID] = {
+json_token_regex regexes[JSON_TOKEN_TYPE_INVALID] = {
     { .type = JSON_TOKEN_TYPE_TRUE, .regex_string = "true" },
     { .type = JSON_TOKEN_TYPE_INVALID }
 };
