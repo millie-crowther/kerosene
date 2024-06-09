@@ -1,5 +1,26 @@
 #include "json.h"
 
+typedef enum json_token_type {
+    JSON_TOKEN_TYPE_NULL,
+    JSON_TOKEN_TYPE_FALSE,
+    JSON_TOKEN_TYPE_TRUE,
+    JSON_TOKEN_TYPE_NUMBER.
+    JSON_TOKEN_TYPE_STRING,
+    JSON_TOKEN_TYPE_OPEN_BRACE,
+    JSON_TOKEN_TYPE_CLOSE_BRACE,
+    JSON_TOKEN_TYPE_OPEN_BRACKET,
+    JSON_TOKEN_TYPE_CLOSE_BRACKET
+} json_token_type;
+
+typedef struct json_token {
+    json_token_type type;
+    const string string;
+} json_token;
+
+bool tokenize(string string, json_token * tokens){
+
+}
+
 uint32_t value_count_upper_bound(const string string){
     // TODO: lower bound
     return string.length;
