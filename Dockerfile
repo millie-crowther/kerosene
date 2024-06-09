@@ -1,6 +1,7 @@
 FROM ubuntu:24.04
 
 RUN apt update && apt install -y cmake python3 python3-pip python3.12-venv
+RUN apt-get update && apt-get -y install make
 ENV VIRTUAL_ENV=/opt/venv
 RUN python3.12 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
