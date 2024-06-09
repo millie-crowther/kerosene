@@ -6,6 +6,8 @@ typedef struct string {
     uint32_t length;
 } string;
 
+string str(const char * literal);
+
 bool string_equals(const string a, const string b);
 bool string_starts_with(const string string, const string prefix);
 bool string_contains_character(const string string, const char character);
