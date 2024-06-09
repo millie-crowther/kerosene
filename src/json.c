@@ -48,7 +48,7 @@ uint64_t hash(const string string) {
 }
 
 json_value * json_object_get(const json_object * object, const string string){
-    uint64_t index = hash(string.chars, string.length) % JSON_OBJECT_BUCKETS_COUNT;
+    uint64_t index = hash(string) % JSON_OBJECT_BUCKETS_COUNT;
     json_object_bucket bucket = object->buckets[index];
     for (uint32_t i = 0; i < bucket.length; i++){
         json_object_key_pair key_pair = bucket.key_pairs[i];
