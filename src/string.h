@@ -1,6 +1,8 @@
 #ifndef STRING_H
 #define STRING_H
 
+#include <stdint.h>
+
 typedef struct string {
     const char * chars;
     uint32_t length;
