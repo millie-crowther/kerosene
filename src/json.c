@@ -11,13 +11,36 @@ typedef enum json_token_type {
     JSON_TOKEN_TYPE_OPEN_BRACE,
     JSON_TOKEN_TYPE_CLOSE_BRACE,
     JSON_TOKEN_TYPE_OPEN_BRACKET,
-    JSON_TOKEN_TYPE_CLOSE_BRACKET
+    JSON_TOKEN_TYPE_CLOSE_BRACKET,
+    JSON_TOKEN_TYPE_INVALID
 } json_token_type;
 
 typedef struct json_token {
     json_token_type type;
     const string string;
 } json_token;
+
+typedef struct json_token_regex {
+    json_token_type type;
+    const char * regex_string;
+    regex_t regex
+} json_token_regex;
+
+json_token_regular_expression regexes[JSON_TOKEN_TYPE_INVALID] = {
+    { .type = JSON_TOKEN_TYPE_TRUE, .regex_string = "true" },
+    { .type = JSON_TOKEN_TYPE_INVALID }
+};
+
+bool json_compile_regular_expressions(){
+    for (uint32_t i = 0; regexes[i].type != JSON_TOKEN_TYPE_INVALID; i++){
+        int exit_code = regcomp(&regexes[i].regex, regexes[i].regex_string, 0);
+        if (exit_code != 0){
+            return false;
+        }
+    }
+
+    return true;
+}
 
 bool tokenize(string string, json_token * tokens){
 
