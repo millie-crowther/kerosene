@@ -1,6 +1,8 @@
 #ifndef JSON_H
 #define JSON_H
 
+#include <stdint.h>
+
 #include "string.h"
 
 typedef enum json_type {
