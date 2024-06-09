@@ -9,10 +9,10 @@ typedef struct string {
 string str(const char * literal);
 
 bool string_equals(const string a, const string b);
-bool string_starts_with(const string string, const string prefix);
-bool string_contains_character(const string string, const char character);
-string string_tail(const string string);
-char string_head(const string string);
-bool string_is_empty(const string string);
+bool string_starts_with(const string s, const string prefix);
+bool string_contains_character(const string s, const char character);
+string string_tail(const string s);
+char string_head(const string s);
+bool string_is_empty(const string s);
 
 #endif
