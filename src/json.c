@@ -1,5 +1,7 @@
 #include "json.h"
 
+#include <regex.h>
+
 typedef enum json_token_type {
     JSON_TOKEN_TYPE_NULL,
     JSON_TOKEN_TYPE_FALSE,
