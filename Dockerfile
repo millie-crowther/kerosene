@@ -1,6 +1,6 @@
 FROM ubuntu:24.04
 
-RUN apt update && apt install -y cmake pcre2-10.44 python3 python3-pip python3.12-venv
+RUN apt update && apt install -y cmake pcre2 python3 python3-pip python3.12-venv
 ENV VIRTUAL_ENV=/opt/venv
 RUN python3.12 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
