@@ -7,7 +7,6 @@ project (simorgh C)
 set(SOURCES
     main.c
     json.c
-    string.c
 )
 
 add_executable(simorgh ${SOURCES})
