@@ -88,7 +88,7 @@ json_value_t * json_object_get(const json_object_t * object, const char * string
     json_object_bucket_t bucket = object->buckets[index];
     for (uint32_t i = 0; i < bucket.length; i++){
         if (strcmp(string, bucket.key_pairs[i].key) == 0){
-            return key_pair.value;
+            return bucket.key_pairs[i].value;
         }
     }
     return nullptr;
