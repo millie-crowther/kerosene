@@ -1,6 +1,5 @@
 #include "json.h"
 
-#include <pcre2.h>
 #include <regex.h>
 
 typedef enum json_token_type {
@@ -28,7 +27,7 @@ typedef struct json_token_regex {
 } json_token_regex;
 
 json_token_regex regexes[JSON_TOKEN_TYPE_INVALID] = {
-    { .type = JSON_TOKEN_TYPE_TRUE, .regex_string = "true" },
+    { .type = JSON_TOKEN_TYPE_TRUE, .regex_string = "^true" },
     { .type = JSON_TOKEN_TYPE_INVALID }
 };
 
