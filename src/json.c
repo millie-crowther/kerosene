@@ -51,7 +51,7 @@ json_token_t * check_scope(json_token_t * tokens, uint32_t scope, json_token_t *
         }
         
         if (tokens->type == JSON_TOKEN_TYPE_OPEN_BRACE || tokens->type == JSON_TOKEN_TYPE_OPEN_BRACKET){
-            tokens = check_scope(tokens + 1, scope + 1, tokens);
+            tokens = check_scope(tokens + 1, scope + 1, tokens, end);
         } else if (tokens->type == JSON_TOKEN_TYPE_CLOSE_BRACE || tokens->type == JSON_TOKEN_TYPE_CLOSE_BRACKET){
             return tokens;
         }
