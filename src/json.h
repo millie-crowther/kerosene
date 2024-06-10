@@ -8,7 +8,7 @@ typedef enum json_type_t {
     JSON_TYPE_BOOLEAN,
     JSON_TYPE_NUMBER,
     JSON_TYPE_STRING,
-    JSON_TYPE_LIST,
+    JSON_TYPE_ARRAY,
     JSON_TYPE_OBJECT,
     JSON_TYPE_INVALID
 } json_type_t;
