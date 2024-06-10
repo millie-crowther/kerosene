@@ -158,16 +158,16 @@ json_value_t parse_json_value(json_token_t ** tokens, json_value_t ** values){
         uint32_t array_length = token.children;
         (*values) += array_length;
         for (uint32_t i = 0; i < array_length; i++){
-            bool result = parse_json_value(tokens, values);
-            if (!result){
-                return false;
+            array_elements[i] = parse_json_value(tokens, values);
+            if (!array_elements[i].type == JSON_TYPE_INVALID){
+                return array_elements[i];
             }
 
             token = **token;
             (*tokens)++;
             if (
-                (i == array_length - 1 && token.type != JSON_TOKEN_TYPE_CLOSE_BRACKET) || 
-                (i < array_length - 1 && token.type != JSON_TOKEN_TYPE_COMMA)
+                (i < array_length - 1 && token.type != JSON_TOKEN_TYPE_COMMA) ||
+                (i == array_length - 1 && token.type != JSON_TOKEN_TYPE_CLOSE_BRACKET) 
             ){
                 return false;
             }
@@ -180,12 +180,9 @@ json_value_t parse_json_value(json_token_t ** tokens, json_value_t ** values){
                 .length = array_length,
             },
         };
-    } else {
-        return false;
-    }
+    } 
 
-    (*values)++;
-    return true;
+    return (json_value_t){ .type = JSON_TYPE_INVALID };
 
 bool json_document_parse(const char * string, json_document_t * document){
     size_t string_length = strlen(string);
