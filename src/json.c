@@ -50,9 +50,9 @@ json_token_t * check_scope(json_token_t * tokens, uint32_t scope, json_token_t *
             parent->children++;
         }
         
-        if (*tokens == JSON_TOKEN_TYPE_OPEN_BRACE || *tokens == JSON_TOKEN_TYPE_OPEN_BRACKET){
+        if (tokens->type == JSON_TOKEN_TYPE_OPEN_BRACE || tokens->type == JSON_TOKEN_TYPE_OPEN_BRACKET){
             tokens = check_scope(tokens + 1, scope + 1, tokens);
-        } else if (*tokens == JSON_TOKEN_TYPE_CLOSE_BRACE || *tokens == JSON_TOKEN_TYPE_CLOSE_BRACKET){
+        } else if (tokens->type == JSON_TOKEN_TYPE_CLOSE_BRACE || tokens->type == JSON_TOKEN_TYPE_CLOSE_BRACKET){
             return tokens;
         }
     }
