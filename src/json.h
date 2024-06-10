@@ -15,6 +15,11 @@ typedef enum json_type_t {
 
 struct json_value_t;
 
+typedef struct json_array_t {
+    struct json_value_t * elements;
+    uint32_t length;
+} json_array_t;
+
 typedef struct json_key_pair_t {
     const char * key;
     struct json_value_t * value;
@@ -37,7 +42,7 @@ typedef struct json_value_t {
         bool boolean;
         double number;
         const char * string;
-        uint32_t array_length;
+        json_array_t array;
         json_object_t * object;
     };
 } json_value_t;
