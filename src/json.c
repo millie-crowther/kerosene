@@ -137,7 +137,7 @@ json_value_t * json_object_get(const json_object_t * object, const char * string
     return nullptr;
 }
 
-json_value_t parse_json_value(json_token_t ** tokens, json_value_t ** values){
+json_value_t * parse_json_value(json_token_t ** tokens, json_value_t ** values){
     json_token_t token = **token;
     (*tokens)++;
 
@@ -145,8 +145,8 @@ json_value_t parse_json_value(json_token_t ** tokens, json_value_t ** values){
     json_value_t * elements = *values;
     (*values) += length;
 
-    json_value_t result = (json_value_t){ .type = JSON_TYPE_INVALID };
-
+    json_value_t result;
+    
     if (token.type == JSON_TOKEN_TYPE_NULL){
         result = (json_value_t){ .type = JSON_TYPE_NULL };
     } else if (token.type == JSON_TOKEN_TYPE_FALSE || token.type == JSON_TOKEN_TYPE_TRUE){
@@ -162,10 +162,11 @@ json_value_t parse_json_value(json_token_t ** tokens, json_value_t ** values){
         // TODO
     } else if (tokens->type == JSON_TOKEN_TYPE_OPEN_BRACKET){
         for (uint32_t i = 0; i < length; i++){
-            elements[i] = parse_json_value(tokens, values);
-            if (elements[i].type == JSON_TYPE_INVALID){
-                break;
+            json_value_t * element = parse_json_value(tokens, values);
+            if (element == nullptr){
+                return nullptr;
             }
+            elements[i] = *element;
 
             token = **token;
             (*tokens)++;
@@ -173,7 +174,7 @@ json_value_t parse_json_value(json_token_t ** tokens, json_value_t ** values){
                 (i < array_length - 1 && token.type != JSON_TOKEN_TYPE_COMMA) ||
                 (i == array_length - 1 && token.type != JSON_TOKEN_TYPE_CLOSE_BRACKET) 
             ){
-                break;
+                return nullptr;
             }
         }
         
@@ -184,9 +185,12 @@ json_value_t parse_json_value(json_token_t ** tokens, json_value_t ** values){
                 .length = length,
             },
         };
-    } 
+    } else {
+        return nullptr;
+    }
 
-    return result;
+    **values = result;
+    return *values;
 
 bool json_document_parse(const char * string, json_document_t * document){
     size_t string_length = strlen(string);
@@ -228,10 +232,10 @@ bool json_document_parse(const char * string, json_document_t * document){
     json_key_pair_t * key_pairs = (json_key_pair_t *)(values + value_count);
     json_object_t * objects = (json_object_t *)(key_pairs + key_pair_count);
 
-    json_value_t root = parse_json_value(tokens, values);
+    json_value_t * root = parse_json_value(tokens, values);
     free(tokens);
 
-    if (root.type == JSON_TYPE_INVALID){
+    if (root == nullptr){
         free(data_pointer);
         return false;
     }
