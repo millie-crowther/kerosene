@@ -34,7 +34,7 @@ json_token_regex regexes[JSON_TOKEN_TYPE_INVALID] = {
 
 bool json_compile_regular_expressions(){
     for (uint32_t i = 0; regexes[i].type != JSON_TOKEN_TYPE_INVALID; i++){
-        int exit_code = regcomp(&regexes[i].regex, regexes[i].regex_string, 0);
+        int exit_code = regcomp(&regexes[i].regex, regexes[i].regex_string, REG_EXTENDED);
         if (exit_code != 0){
             return false;
         }
