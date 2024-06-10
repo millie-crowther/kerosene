@@ -160,7 +160,7 @@ json_value_t * parse_json_value(json_token_t ** tokens, json_value_t ** values){
         // TODO
     } else if (token.type == JSON_TOKEN_TYPE_OPEN_BRACE){
         // TODO
-    } else if (tokens->type == JSON_TOKEN_TYPE_OPEN_BRACKET){
+    } else if (token.type == JSON_TOKEN_TYPE_OPEN_BRACKET){
         for (uint32_t i = 0; i < length; i++){
             json_value_t * element = parse_json_value(tokens, values);
             if (element == nullptr){
@@ -168,11 +168,11 @@ json_value_t * parse_json_value(json_token_t ** tokens, json_value_t ** values){
             }
             elements[i] = *element;
 
-            token = **token;
+            token = **tokens;
             (*tokens)++;
             if (
-                (i < array_length - 1 && token.type != JSON_TOKEN_TYPE_COMMA) ||
-                (i == array_length - 1 && token.type != JSON_TOKEN_TYPE_CLOSE_BRACKET) 
+                (i < length - 1 && token.type != JSON_TOKEN_TYPE_COMMA) ||
+                (i == length - 1 && token.type != JSON_TOKEN_TYPE_CLOSE_BRACKET) 
             ){
                 return nullptr;
             }
@@ -232,7 +232,9 @@ bool json_document_parse(const char * string, json_document_t * document){
     json_key_pair_t * key_pairs = (json_key_pair_t *)(values + value_count);
     json_object_t * objects = (json_object_t *)(key_pairs + key_pair_count);
 
-    json_value_t * root = parse_json_value(tokens, values);
+    json_token_t * token_pointer = tokens;
+    json_value_t * value_pointer = values;
+    json_value_t * root = parse_json_value(&token_pointer, &value_pointer);
     free(tokens);
 
     if (root == nullptr){
