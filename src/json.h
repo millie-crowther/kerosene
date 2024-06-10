@@ -47,12 +47,12 @@ typedef struct json_value_t {
 } json_value_t;
 
 typedef struct json_document_t {
+    void * data_pointer;
     json_value_t * values;
     json_object_key_pair_t * key_pairs;
-    const char * string;
-    json_object_bucket * bucket;
+    json_object_bucket_t * bucket;
 
-    void * data_pointer;
+    const char * string;
 } json_document_t;
 
 bool json_compile_regular_expressions();
