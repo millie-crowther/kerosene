@@ -152,7 +152,7 @@ json_value_t * parse_json_value(json_token_t ** tokens, json_value_t ** values){
     } else if (token.type == JSON_TOKEN_TYPE_FALSE || token.type == JSON_TOKEN_TYPE_TRUE){
         result = (json_value_t){ 
             .type = JSON_TYPE_BOOLEAN,
-            .boolean = token.type == JSON_TOKEN_TYPE_TRUE;
+            .boolean = token.type == JSON_TOKEN_TYPE_TRUE,
         };
     } else if (token.type == JSON_TOKEN_TYPE_NUMBER){
         result = (json_value_t){ .type = JSON_TYPE_NUMBER, .number = atof(token.string) };
