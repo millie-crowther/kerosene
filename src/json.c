@@ -5,7 +5,7 @@
 #include <string.h>
 
 typedef enum json_token_type_t {
-    // Identify a JSON value
+    // Tokens that correspond to JSON values
     JSON_TOKEN_TYPE_NULL = 0,
     JSON_TOKEN_TYPE_FALSE = 1,
     JSON_TOKEN_TYPE_TRUE = 2,
@@ -13,14 +13,15 @@ typedef enum json_token_type_t {
     JSON_TOKEN_TYPE_STRING = 4,
     JSON_TOKEN_TYPE_OPEN_BRACE = 5,
     JSON_TOKEN_TYPE_OPEN_BRACKET = 6,
+    JSON_TOKEN_TYPE_VALUE_IDENTIFIER = 7,
 
-    // Do not identify a JSON value
-    JSON_TOKEN_TYPE_COLON = 7,
-    JSON_TOKEN_TYPE_COMMA = 8,
-    JSON_TOKEN_TYPE_CLOSE_BRACE = 9,
-    JSON_TOKEN_TYPE_CLOSE_BRACKET = 10,
-    JSON_TOKEN_TYPE_WHITESPACE = 11,
-    JSON_TOKEN_TYPE_INVALID = 12
+    // Tokens that do not directly correspond to a JSON value
+    JSON_TOKEN_TYPE_COLON = 8,
+    JSON_TOKEN_TYPE_COMMA = 9,
+    JSON_TOKEN_TYPE_CLOSE_BRACE = 10,
+    JSON_TOKEN_TYPE_CLOSE_BRACKET = 11,
+    JSON_TOKEN_TYPE_WHITESPACE = 12,
+    JSON_TOKEN_TYPE_INVALID = 13
 } json_token_type_t;
 
 typedef struct json_token_t {
