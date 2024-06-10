@@ -152,7 +152,7 @@ bool json_document_parse(const char * string, json_document_t * document){
     json_key_pair_t * key_pairs = (json_key_pair_t *)(values + value_count);
     json_object_t * objects = (json_object_t *)(key_pairs + key_pair_count);
     
-    json_document_t document = (json_document_t){
+    *document = (json_document_t){
         .data_pointer = data_pointer,
         .values = data_pointer,
     };
