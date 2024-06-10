@@ -20,7 +20,7 @@ typedef struct json_array_t {
 } json_array_t;
 
 typedef struct json_object_key_pair_t {
-    const char * string;
+    const char * key;
     struct json_value_t * value;
 } json_object_key_pair_t;
 
