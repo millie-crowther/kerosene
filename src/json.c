@@ -74,6 +74,7 @@ bool tokenize(const char * string, json_token_t * tokens){
         }
     }
 
+    *tokens = JSON_TOKEN_TYPE_INVALID;
     return true;
 }
 
@@ -101,7 +102,7 @@ json_value_t * json_object_get(const json_object_t * object, const char * string
 
 bool json_document_parse(const char * string, json_document_t * document){
     size_t string_length = strlen(string);
-    json_token_t * tokens = calloc(string_length, sizeof(json_token_t));
+    json_token_t * tokens = calloc(string_length + 1, sizeof(json_token_t));
 
     if (tokens == nullptr){
         return false;
