@@ -135,5 +135,5 @@ bool json_document_parse(const char * string, json_document_t * document){
     uint32_t value_count;
     uint32_t key_pair_count;
     uint32_t object_count;
-    count_tokens(&value_count, &key_pair_count, &object_count); 
+    count_tokens(tokens, &value_count, &key_pair_count, &object_count); 
 }
