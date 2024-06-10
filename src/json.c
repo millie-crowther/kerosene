@@ -76,8 +76,8 @@ uint64_t hash(const char * string) {
     // see: http://www.cs.yorku.ca/~oz/hash.html
     uint64_t hash = 5381;
 
-    for (uint32_t i = 0; string[i] != '\0'; i++){
-        hash = ((hash << 5) + hash) + string.chars[i];
+    for (; *string != '\0'; string++){
+        hash = ((hash << 5) + hash) + *string;
     }
 
     return hash;
