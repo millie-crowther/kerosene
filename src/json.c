@@ -145,14 +145,17 @@ json_value_t parse_json_value(json_token_t ** tokens, json_value_t ** values){
     json_value_t * elements = *values;
     (*values) += length;
 
+    json_value_t result = (json_value_t){ .type = JSON_TYPE_INVALID };
+
     if (token.type == JSON_TOKEN_TYPE_NULL){
-        return (json_value_t){ .type = JSON_TYPE_NULL };
-    } else if (token.type == JSON_TOKEN_TYPE_FALSE){
-        return (json_value_t){ .type = JSON_TYPE_BOOLEAN, .boolean = false };
-    } else if (token.type == JSON_TOKEN_TYPE_TRUE){
-        return (json_value_t){ .type = JSON_TYPE_BOOLEAN, .boolean = true };
+        result = (json_value_t){ .type = JSON_TYPE_NULL };
+    } else if (token.type == JSON_TOKEN_TYPE_FALSE || token.type == JSON_TOKEN_TYPE_TRUE){
+        result = (json_value_t){ 
+            .type = JSON_TYPE_BOOLEAN,
+            .boolean = token.type == JSON_TOKEN_TYPE_TRUE;
+        };
     } else if (token.type == JSON_TOKEN_TYPE_NUMBER){
-        return (json_value_t){ .type = JSON_TYPE_NUMBER, .number = atof(token.string) };
+        result = (json_value_t){ .type = JSON_TYPE_NUMBER, .number = atof(token.string) };
     } else if (token.type == JSON_TOKEN_TYPE_STRING){
         // TODO
     } else if (token.type == JSON_TOKEN_TYPE_OPEN_BRACE){
@@ -161,7 +164,7 @@ json_value_t parse_json_value(json_token_t ** tokens, json_value_t ** values){
         for (uint32_t i = 0; i < length; i++){
             elements[i] = parse_json_value(tokens, values);
             if (elements[i].type == JSON_TYPE_INVALID){
-                return elements[i];
+                break;
             }
 
             token = **token;
@@ -170,11 +173,11 @@ json_value_t parse_json_value(json_token_t ** tokens, json_value_t ** values){
                 (i < array_length - 1 && token.type != JSON_TOKEN_TYPE_COMMA) ||
                 (i == array_length - 1 && token.type != JSON_TOKEN_TYPE_CLOSE_BRACKET) 
             ){
-                return false;
+                break;
             }
         }
         
-        return (json_value_t){ 
+        result = (json_value_t){ 
             .type = JSON_TYPE_ARRAY, 
             .array = (json_array_t){
                 .elements = elements,
@@ -183,7 +186,7 @@ json_value_t parse_json_value(json_token_t ** tokens, json_value_t ** values){
         };
     } 
 
-    return (json_value_t){ .type = JSON_TYPE_INVALID };
+    return result;
 
 bool json_document_parse(const char * string, json_document_t * document){
     size_t string_length = strlen(string);
