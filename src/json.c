@@ -109,7 +109,7 @@ uint64_t hash(const char * string) {
 
 json_value_t * json_object_get(const json_object_t * object, const char * string){
     uint64_t index = hash(string) % JSON_OBJECT_BUCKETS_COUNT;
-    json_object_bucket_t bucket = object->buckets[index];
+    json_bucket_t bucket = object->buckets[index];
     for (uint32_t i = 0; i < bucket.length; i++){
         if (strcmp(string, bucket.key_pairs[i].key) == 0){
             return bucket.key_pairs[i].value;
