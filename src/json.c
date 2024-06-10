@@ -137,25 +137,44 @@ json_value_t * json_object_get(const json_object_t * object, const char * string
     return nullptr;
 }
 
-json_value_t parse_json_value(json_token_t * tokens, json_value_t * values){
-    if (tokens->type == JSON_TOKEN_TYPE_NULL){
-        return (json_value_t){ .type = JSON_TYPE_NULL };
-    } else if (tokens->type == JSON_TOKEN_TYPE_FALSE){
-        return (json_value_t){ .type = JSON_TYPE_BOOLEAN, .boolean = false };
-    } else if (tokens->type == JSON_TOKEN_TYPE_TRUE){
-        return (json_value_t){ .type = JSON_TYPE_BOOLEAN, .boolean = true };
-    } else if (tokens->type == JSON_TOKEN_TYPE_NUMBER){
-        return (json_value_t){ .type = JSON_TYPE_NUMBER, .number = atof(tokens->string) };
-    } else if (tokens->type == JSON_TOKEN_TYPE_STRING){
+bool parse_json_value(json_token_t ** tokens, json_value_t ** values){
+    json_token_t token = **token;
+    (*tokens)++;
+
+    if (token.type == JSON_TOKEN_TYPE_NULL){
+        **values = (json_value_t){ .type = JSON_TYPE_NULL };
+    } else if (token.type == JSON_TOKEN_TYPE_FALSE){
+        **values = (json_value_t){ .type = JSON_TYPE_BOOLEAN, .boolean = false };
+    } else if (token.type == JSON_TOKEN_TYPE_TRUE){
+        **values = (json_value_t){ .type = JSON_TYPE_BOOLEAN, .boolean = true };
+    } else if (token.type == JSON_TOKEN_TYPE_NUMBER){
+        **values = (json_value_t){ .type = JSON_TYPE_NUMBER, .number = atof(token.string) };
+    } else if (token.type == JSON_TOKEN_TYPE_STRING){
         // TODO
-    } else if (tokens->type == JSON_TOKEN_TYPE_OPEN_BRACE){
+    } else if (token.type == JSON_TOKEN_TYPE_OPEN_BRACE){
         // TODO
     } else if (tokens->type == JSON_TOKEN_TYPE_OPEN_BRACKET){
-        // TODO
-    } 
+        uint32_t array_length = token.children;
+        **values = (json_value_t){ .type = JSON_TYPE_ARRAY, .array_length = array_length  };
+        (*values) += array_length + 1;
+        for (uint32_t i = 0; i < array_length; i++){
+            bool result = parse_json_value(tokens, values);
+            if (!result){
+                return false;
+            }
 
-    return (json_value_t){ .type = JSON_TYPE_INVALID };
-}
+            json_token_t comma_token = **token;
+            if (comma_token.type != JSON_TOKEN_TYPE_COMMA){
+                return false;
+            }
+            (*tokens)++;
+        }
+    } else {
+        return false;
+    }
+
+    (*values)++;
+    return true;
 
 bool json_document_parse(const char * string, json_document_t * document){
     size_t string_length = strlen(string);
