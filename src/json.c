@@ -1,5 +1,6 @@
 #include "json.h"
 
+#include <pcre2.h>
 #include <regex.h>
 
 typedef enum json_token_type {
