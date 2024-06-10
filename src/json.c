@@ -17,7 +17,7 @@ typedef enum json_token_type_t {
 } json_token_type_t;
 
 typedef struct json_token_t {
-    json_token_type type;
+    json_token_type_t type;
     const char * string;
 } json_token_t;
 
