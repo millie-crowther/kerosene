@@ -19,20 +19,20 @@ typedef struct json_array_t {
     uint32_t length;
 } json_array_t;
 
-typedef struct json_object_key_pair_t {
+typedef struct json_key_pair_t {
     const char * key;
     struct json_value_t * value;
-} json_object_key_pair_t;
+} json_key_pair_t;
 
-typedef struct json_object_bucket_t {
-    json_object_key_pair_t * key_pairs;
+typedef struct json_bucket_t {
+    json_key_pair_t * key_pairs;
     uint32_t length;
-} json_object_bucket_t;
+} json_bucket_t;
 
 #define JSON_OBJECT_BUCKETS_COUNT 32
 
 typedef struct json_object_t {
-    json_object_bucket_t * buckets;
+    json_bucket_t * buckets;
 } json_object_t;
 
 typedef struct json_value_t {
