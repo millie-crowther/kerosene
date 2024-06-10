@@ -141,6 +141,10 @@ json_value_t parse_json_value(json_token_t ** tokens, json_value_t ** values){
     json_token_t token = **token;
     (*tokens)++;
 
+    uint32_t length = token.children;
+    json_value_t * elements = *values;
+    (*values) += length;
+
     if (token.type == JSON_TOKEN_TYPE_NULL){
         return (json_value_t){ .type = JSON_TYPE_NULL };
     } else if (token.type == JSON_TOKEN_TYPE_FALSE){
@@ -154,13 +158,10 @@ json_value_t parse_json_value(json_token_t ** tokens, json_value_t ** values){
     } else if (token.type == JSON_TOKEN_TYPE_OPEN_BRACE){
         // TODO
     } else if (tokens->type == JSON_TOKEN_TYPE_OPEN_BRACKET){
-        json_value_t * array_elements = *values;
-        uint32_t array_length = token.children;
-        (*values) += array_length;
-        for (uint32_t i = 0; i < array_length; i++){
-            array_elements[i] = parse_json_value(tokens, values);
-            if (!array_elements[i].type == JSON_TYPE_INVALID){
-                return array_elements[i];
+        for (uint32_t i = 0; i < length; i++){
+            elements[i] = parse_json_value(tokens, values);
+            if (elements[i].type == JSON_TYPE_INVALID){
+                return elements[i];
             }
 
             token = **token;
@@ -176,8 +177,8 @@ json_value_t parse_json_value(json_token_t ** tokens, json_value_t ** values){
         return (json_value_t){ 
             .type = JSON_TYPE_ARRAY, 
             .array = (json_array_t){
-                .elements = array_elements,
-                .length = array_length,
+                .elements = elements,
+                .length = length,
             },
         };
     } 
