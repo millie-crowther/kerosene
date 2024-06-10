@@ -1,6 +1,7 @@
 #include "json.h"
 
 #include <regex.h>
+#include <string.h>
 
 typedef enum json_token_type_t {
     JSON_TOKEN_TYPE_NULL,
@@ -46,20 +47,28 @@ bool json_compile_regular_expressions(){
 }
 
 bool tokenize(const char * string, json_token_t * tokens){
-    for (uint32_t i = 0; regexes[i].type != JSON_TOKEN_TYPE_INVALID; i++){
-        regmatch_t match;
-        int result = regexec(&regexes[i].regex, string, 1, &match, 0);
-        if (result == 0){
-            if (regexes[i].type != JSON_TOKEN_TYPE_WHITESPACE){
-                *tokens = (json_token_t){
-                    .type = regexes[i].type,
-                    .string = string,
-                };
+    while (strlen(string) > 0){
+        for (uint32_t i = 0;; i++){
+            if (regexes[i].type == JSON_TOKEN_TYPE_INVALID){
+                return false;
             }
-            string = string + match.rm_eo;
-            i = 0;
+            
+            regmatch_t match;
+            int result = regexec(&regexes[i].regex, string, 1, &match, 0);
+            if (result == 0){
+                if (regexes[i].type != JSON_TOKEN_TYPE_WHITESPACE){
+                    *tokens = (json_token_t){
+                        .type = regexes[i].type,
+                        .string = string,
+                    };
+                }
+                string = string + match.rm_eo;
+                break;
+            }
         }
     }
+
+    return true;
 }
 
 uint64_t hash(const string string) {
