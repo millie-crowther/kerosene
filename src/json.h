@@ -9,8 +9,7 @@ typedef enum json_type_t {
     JSON_TYPE_NUMBER,
     JSON_TYPE_STRING,
     JSON_TYPE_ARRAY,
-    JSON_TYPE_OBJECT,
-    JSON_TYPE_INVALID
+    JSON_TYPE_OBJECT
 } json_type_t;
 
 struct json_value_t;
@@ -49,7 +48,7 @@ typedef struct json_value_t {
 
 typedef struct json_document_t {
     void * data_pointer;
-    json_value_t root;
+    json_value_t * root;
 } json_document_t;
 
 bool json_compile_regular_expressions();
