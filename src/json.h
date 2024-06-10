@@ -32,7 +32,7 @@ typedef struct json_bucket_t {
 #define JSON_OBJECT_BUCKETS_COUNT 32
 
 typedef struct json_object_t {
-    json_bucket_t * buckets;
+    json_bucket_t buckets[JSON_OBJECT_BUCKETS_COUNT];
 } json_object_t;
 
 typedef struct json_value_t {
@@ -42,7 +42,7 @@ typedef struct json_value_t {
         double number;
         const char * string;
         json_array_t array;
-        json_object_t object;
+        json_object_t * object;
     };
 } json_value_t;
 
