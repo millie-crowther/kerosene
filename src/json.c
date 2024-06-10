@@ -61,6 +61,7 @@ bool tokenize(const char * string, json_token_t * tokens){
                         .type = regexes[i].type,
                         .string = string,
                     };
+                    tokens++;
                 }
                 string += match.rm_eo;
                 break;
