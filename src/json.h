@@ -48,7 +48,7 @@ typedef struct json_value_t {
 
 typedef struct json_document_t {
     void * data_pointer;
-    json_value_t * values;
+    json_value_t * root;
 } json_document_t;
 
 bool json_compile_regular_expressions();
