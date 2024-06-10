@@ -178,7 +178,7 @@ bool json_document_parse(const char * string, json_document_t * document){
     free(tokens);
 
     if (!result){
-        free(date_pointer);
+        free(data_pointer);
         return false;
     }
     
