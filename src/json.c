@@ -46,7 +46,7 @@ json_token_t * check_scope(json_token_t * tokens, uint32_t scope, json_token_t *
     for (; tokens < end; tokens++){
         tokens->scope = scope;
         
-        if (parent != nullptr){
+        if (parent != nullptr && tokens->type < JSON_TOKEN_TYPE_VALUE_IDENTIFIER){
             parent->children++;
         }
         
