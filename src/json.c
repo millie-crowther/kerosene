@@ -74,7 +74,7 @@ bool tokenize(const char * string, json_token_t * tokens){
         }
     }
 
-    *tokens = JSON_TOKEN_TYPE_INVALID;
+    *tokens = { .type = JSON_TOKEN_TYPE_INVALID };
     return true;
 }
 
