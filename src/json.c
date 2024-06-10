@@ -62,7 +62,7 @@ bool tokenize(const char * string, json_token_t * tokens){
                         .string = string,
                     };
                 }
-                string = string + match.rm_eo;
+                string += match.rm_eo;
                 break;
             }
         }
