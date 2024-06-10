@@ -52,7 +52,7 @@ bool json_compile_regular_expressions(){
 }
 
 bool tokenize(const char * string, json_token_t * tokens){
-    while (strlen(string) > 0){
+    while (*string != '\0'){
         for (uint32_t i = 0;; i++){
             if (regexes[i].type == JSON_TOKEN_TYPE_INVALID){
                 return false;
