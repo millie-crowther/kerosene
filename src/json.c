@@ -40,6 +40,24 @@ json_token_regex_t regexes[JSON_TOKEN_TYPE_INVALID] = {
     { .type = JSON_TOKEN_TYPE_INVALID }
 };
 
+void count_tokens(json_token_t * tokens, uint32_t * value_count, uint32_t * key_pair_count, uint32_t * object_count){
+    *value_count = 0;
+    *key_pair_count = 0;
+    *object_count = 0;
+
+    for (uint32_t i = 0; tokens[i].type != JSON_TOKEN_TYPE_INVALID; i++){
+        if (tokens[i].type < JSON_TOKEN_TYPE_VALUE_IDENTIFIER){
+            (*value_count)++;
+            
+            if (tokens[i].type == JSON_TOKEN_TYPE_OPEN_BRACE){
+                (*object_count)++;
+            } 
+        } else if (tokens[i].type == JSON_TOKEN_TYPE_COLON){
+            (*key_pair_count)++;
+        }
+    }
+}
+
 bool json_compile_regular_expressions(){
     for (uint32_t i = 0; regexes[i].type != JSON_TOKEN_TYPE_INVALID; i++){
         int exit_code = regcomp(&regexes[i].regex, regexes[i].regex_string, REG_EXTENDED);
@@ -114,5 +132,8 @@ bool json_document_parse(const char * string, json_document_t * document){
         return false;
     }
 
-    
+    uint32_t value_count;
+    uint32_t key_pair_count;
+    uint32_t object_count;
+    count_tokens(&value_count, &key_pair_count, &object_count); 
 }
