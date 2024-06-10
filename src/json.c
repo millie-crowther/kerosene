@@ -138,7 +138,7 @@ json_value_t * json_object_get(const json_object_t * object, const char * string
 }
 
 json_value_t * parse_json_value(json_token_t ** tokens, json_value_t ** values){
-    json_token_t token = **token;
+    json_token_t token = **tokens;
     (*tokens)++;
 
     uint32_t length = token.children;
