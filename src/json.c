@@ -137,38 +137,49 @@ json_value_t * json_object_get(const json_object_t * object, const char * string
     return nullptr;
 }
 
-bool parse_json_value(json_token_t ** tokens, json_value_t ** values){
+json_value_t parse_json_value(json_token_t ** tokens, json_value_t ** values){
     json_token_t token = **token;
     (*tokens)++;
 
     if (token.type == JSON_TOKEN_TYPE_NULL){
-        **values = (json_value_t){ .type = JSON_TYPE_NULL };
+        return (json_value_t){ .type = JSON_TYPE_NULL };
     } else if (token.type == JSON_TOKEN_TYPE_FALSE){
-        **values = (json_value_t){ .type = JSON_TYPE_BOOLEAN, .boolean = false };
+        return (json_value_t){ .type = JSON_TYPE_BOOLEAN, .boolean = false };
     } else if (token.type == JSON_TOKEN_TYPE_TRUE){
-        **values = (json_value_t){ .type = JSON_TYPE_BOOLEAN, .boolean = true };
+        return (json_value_t){ .type = JSON_TYPE_BOOLEAN, .boolean = true };
     } else if (token.type == JSON_TOKEN_TYPE_NUMBER){
-        **values = (json_value_t){ .type = JSON_TYPE_NUMBER, .number = atof(token.string) };
+        return (json_value_t){ .type = JSON_TYPE_NUMBER, .number = atof(token.string) };
     } else if (token.type == JSON_TOKEN_TYPE_STRING){
         // TODO
     } else if (token.type == JSON_TOKEN_TYPE_OPEN_BRACE){
         // TODO
     } else if (tokens->type == JSON_TOKEN_TYPE_OPEN_BRACKET){
+        json_value_t * array_elements = *values;
         uint32_t array_length = token.children;
-        **values = (json_value_t){ .type = JSON_TYPE_ARRAY, .array_length = array_length  };
-        (*values) += array_length + 1;
+        (*values) += array_length;
         for (uint32_t i = 0; i < array_length; i++){
             bool result = parse_json_value(tokens, values);
             if (!result){
                 return false;
             }
 
-            json_token_t comma_token = **token;
-            if (comma_token.type != JSON_TOKEN_TYPE_COMMA){
+            token = **token;
+            (*tokens)++;
+            if (
+                (i == array_length - 1 && token.type != JSON_TOKEN_TYPE_CLOSE_BRACKET) || 
+                (i < array_length - 1 && token.type != JSON_TOKEN_TYPE_COMMA)
+            ){
                 return false;
             }
-            (*tokens)++;
         }
+        
+        return (json_value_t){ 
+            .type = JSON_TYPE_ARRAY, 
+            .array = (json_array_t){
+                .elements = array_elements,
+                .length = array_length,
+            },
+        };
     } else {
         return false;
     }
