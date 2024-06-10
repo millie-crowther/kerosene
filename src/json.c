@@ -127,6 +127,8 @@ bool parse_json_value(json_token_t * tokens, json_value_t * values){
         *values = (json_value_t){ .type = JSON_TYPE_BOOLEAN, .boolean = true };
     } else if (tokens->type == JSON_TOKEN_TYPE_NUMBER){
         *values = (json_value_t){ .type = JSON_TYPE_NUMBER, .number = atof(tokens->string) };
+    } else if (tokens->type == JSON_TOKEN_TYPE_STRING){
+        // TODO
     } else if (tokens->type == JSON_TOKEN_TYPE_OPEN_BRACE){
         // TODO
     } else if (tokens->type == JSON_TOKEN_TYPE_OPEN_BRACKET){
