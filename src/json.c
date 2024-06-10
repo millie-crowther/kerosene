@@ -191,6 +191,7 @@ json_value_t * parse_json_value(json_token_t ** tokens, json_value_t ** values){
 
     **values = result;
     return *values;
+}
 
 bool json_document_parse(const char * string, json_document_t * document){
     size_t string_length = strlen(string);
