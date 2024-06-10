@@ -2,7 +2,7 @@
 
 #include <regex.h>
 
-typedef enum json_token_type {
+typedef enum json_token_type_t {
     JSON_TOKEN_TYPE_NULL,
     JSON_TOKEN_TYPE_FALSE,
     JSON_TOKEN_TYPE_TRUE,
@@ -14,20 +14,20 @@ typedef enum json_token_type {
     JSON_TOKEN_TYPE_CLOSE_BRACKET,
     JSON_TOKEN_TYPE_WHITESPACE,
     JSON_TOKEN_TYPE_INVALID
-} json_token_type;
+} json_token_type_t;
 
-typedef struct json_token {
+typedef struct json_token_t {
     json_token_type type;
-    const string string;
-} json_token;
+    const char * string;
+} json_token_t;
 
-typedef struct json_token_regex {
-    json_token_type type;
+typedef struct json_token_regex_t {
+    json_token_type_t type;
     const char * regex_string;
     regex_t regex
-} json_token_regex;
+} json_token_regex_t;
 
-json_token_regex regexes[JSON_TOKEN_TYPE_INVALID] = {
+json_token_regex_t regexes[JSON_TOKEN_TYPE_INVALID] = {
     { .type = JSON_TOKEN_TYPE_TRUE, .regex_string = "^true" },
     { .type = JSON_TOKEN_TYPE_INVALID }
 };
@@ -43,23 +43,21 @@ bool json_compile_regular_expressions(){
     return true;
 }
 
-bool tokenize(string string, json_token * tokens){
-
-}
-
-uint32_t value_count_upper_bound(const string string){
-    // TODO: lower bound
-    return string.length;
-}
-
-uint32_t key_pair_count_upper_bound(const string string){
-    uint32_t count = 0;
-    for (uint32_t i = 0; i < string.length; i++){
-        if (string.chars[i] == ':'){
-            count++;
+bool tokenize(const char * string, json_token_t * tokens){
+    for (uint32_t i = 0; regexes[i].type != JSON_TOKEN_TYPE_INVALID; i++){
+        regmatch_t match;
+        int result = regexec(&regexes[i].regex, string, 1, &match, 0);
+        if (result == 0){
+            if (regexes[i].type != JSON_TOKEN_TYPE_WHITESPACE){
+                *tokens = (json_token_t){
+                    .type = regexes[i].type,
+                    .string = string,
+                };
+            }
+            string = string + match.rm_eo;
+            i = 0;
         }
     }
-    return count;
 }
 
 uint64_t hash(const string string) {
