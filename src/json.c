@@ -27,7 +27,7 @@ typedef struct json_token_t {
 typedef struct json_token_regex_t {
     json_token_type_t type;
     const char * regex_string;
-    regex_t regex
+    regex_t regex;
 } json_token_regex_t;
 
 json_token_regex_t regexes[JSON_TOKEN_TYPE_INVALID] = {
