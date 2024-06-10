@@ -27,6 +27,8 @@ typedef enum json_token_type_t {
 typedef struct json_token_t {
     json_token_type_t type;
     const char * string;
+    uint32_t children;
+    uint32_t scope;
 } json_token_t;
 
 typedef struct json_token_regex_t {
@@ -39,6 +41,24 @@ json_token_regex_t regexes[JSON_TOKEN_TYPE_INVALID] = {
     { .type = JSON_TOKEN_TYPE_TRUE, .regex_string = "^true" },
     { .type = JSON_TOKEN_TYPE_INVALID }
 };
+
+json_token_t * check_scope(json_token_t * tokens, uint32_t scope, json_token_t * parent, json_token_t * end){
+    for (; tokens < end; tokens++){
+        tokens->scope = scope;
+        
+        if (parent != nullptr){
+            parent->children++;
+        }
+        
+        if (*tokens == JSON_TOKEN_TYPE_OPEN_BRACE || *tokens == JSON_TOKEN_TYPE_OPEN_BRACKET){
+            tokens = check_scope(tokens + 1, scope + 1, tokens);
+        } else if (*tokens == JSON_TOKEN_TYPE_CLOSE_BRACE || *tokens == JSON_TOKEN_TYPE_CLOSE_BRACKET){
+            return tokens;
+        }
+    }
+
+    return nullptr;
+}
 
 void count_tokens(json_token_t * tokens, uint32_t * value_count, uint32_t * key_pair_count, uint32_t * object_count){
     *value_count = 0;
@@ -60,8 +80,7 @@ void count_tokens(json_token_t * tokens, uint32_t * value_count, uint32_t * key_
 
 bool json_compile_regular_expressions(){
     for (uint32_t i = 0; regexes[i].type != JSON_TOKEN_TYPE_INVALID; i++){
-        int exit_code = regcomp(&regexes[i].regex, regexes[i].regex_string, REG_EXTENDED);
-        if (exit_code != 0){
+        if (regcomp(&regexes[i].regex, regexes[i].regex_string, REG_EXTENDED) != 0){
             return false;
         }
     }
@@ -118,31 +137,29 @@ json_value_t * json_object_get(const json_object_t * object, const char * string
     return nullptr;
 }
 
-bool parse_json_value(json_token_t * tokens, json_value_t * values){
+json_value_t parse_json_value(json_token_t * tokens, json_value_t * values){
     if (tokens->type == JSON_TOKEN_TYPE_NULL){
-        *values = (json_value_t){ .type = JSON_TYPE_NULL };
+        return (json_value_t){ .type = JSON_TYPE_NULL };
     } else if (tokens->type == JSON_TOKEN_TYPE_FALSE){
-        *values = (json_value_t){ .type = JSON_TYPE_BOOLEAN, .boolean = false };
+        return (json_value_t){ .type = JSON_TYPE_BOOLEAN, .boolean = false };
     } else if (tokens->type == JSON_TOKEN_TYPE_TRUE){
-        *values = (json_value_t){ .type = JSON_TYPE_BOOLEAN, .boolean = true };
+        return (json_value_t){ .type = JSON_TYPE_BOOLEAN, .boolean = true };
     } else if (tokens->type == JSON_TOKEN_TYPE_NUMBER){
-        *values = (json_value_t){ .type = JSON_TYPE_NUMBER, .number = atof(tokens->string) };
+        return (json_value_t){ .type = JSON_TYPE_NUMBER, .number = atof(tokens->string) };
     } else if (tokens->type == JSON_TOKEN_TYPE_STRING){
         // TODO
     } else if (tokens->type == JSON_TOKEN_TYPE_OPEN_BRACE){
         // TODO
     } else if (tokens->type == JSON_TOKEN_TYPE_OPEN_BRACKET){
         // TODO
-    } else {
-        return false;
-    }
+    } 
 
-    return true;
+    return (json_value_t){ .type = JSON_TYPE_INVALID };
 }
 
 bool json_document_parse(const char * string, json_document_t * document){
     size_t string_length = strlen(string);
-    json_token_t * tokens = calloc(string_length + 1, sizeof(json_token_t));
+    json_token_t * tokens = malloc(string_length * sizeof(json_token_t));
 
     if (tokens == nullptr){
         return false;
@@ -150,6 +167,12 @@ bool json_document_parse(const char * string, json_document_t * document){
 
     bool result = tokenize(string, tokens);
     if (!result){
+        free(tokens);
+        return false;
+    }
+
+    json_token_t * scope_check_result = check_scope(tokens, 0, nullptr, tokens + string_length);
+    if (scope_check_result == nullptr){
         free(tokens);
         return false;
     }
@@ -174,16 +197,18 @@ bool json_document_parse(const char * string, json_document_t * document){
     json_key_pair_t * key_pairs = (json_key_pair_t *)(values + value_count);
     json_object_t * objects = (json_object_t *)(key_pairs + key_pair_count);
 
-    result = parse_json_value(tokens, values);
+    json_value_t root = parse_json_value(tokens, values);
     free(tokens);
 
-    if (!result){
+    if (root.type == JSON_TYPE_INVALID){
         free(data_pointer);
         return false;
     }
     
     *document = (json_document_t){
         .data_pointer = data_pointer,
-        .root = values,
+        .root = root
     };
+
+    return true;
 }
