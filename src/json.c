@@ -60,24 +60,6 @@ json_token_t * check_scope(json_token_t * tokens, uint32_t scope, json_token_t *
     return nullptr;
 }
 
-void count_tokens(json_token_t * tokens, uint32_t * value_count, uint32_t * key_pair_count, uint32_t * object_count){
-    *value_count = 0;
-    *key_pair_count = 0;
-    *object_count = 0;
-
-    for (uint32_t i = 0; tokens[i].type != JSON_TOKEN_TYPE_INVALID; i++){
-        if (tokens[i].type < JSON_TOKEN_TYPE_VALUE_IDENTIFIER){
-            (*value_count)++;
-            
-            if (tokens[i].type == JSON_TOKEN_TYPE_OPEN_BRACE){
-                (*object_count)++;
-            } 
-        } else if (tokens[i].type == JSON_TOKEN_TYPE_COLON){
-            (*key_pair_count)++;
-        }
-    }
-}
-
 bool json_compile_regular_expressions(){
     for (uint32_t i = 0; regexes[i].type != JSON_TOKEN_TYPE_INVALID; i++){
         if (regcomp(&regexes[i].regex, regexes[i].regex_string, REG_EXTENDED) != 0){
@@ -88,22 +70,23 @@ bool json_compile_regular_expressions(){
     return true;
 }
 
-bool tokenize(const char * string, json_token_t * tokens){
+int tokenize(const char * string, json_token_t * tokens){
+    int token_count = 0;
     while (*string != '\0'){
         for (uint32_t i = 0;; i++){
             if (regexes[i].type == JSON_TOKEN_TYPE_INVALID){
-                return false;
+                return -1;
             }
             
             regmatch_t match;
             int result = regexec(&regexes[i].regex, string, 1, &match, 0);
             if (result == 0){
                 if (regexes[i].type != JSON_TOKEN_TYPE_WHITESPACE){
-                    *tokens = (json_token_t){
+                    tokens[token_count] = (json_token_t){
                         .type = regexes[i].type,
                         .string = string,
                     };
-                    tokens++;
+                    token_count++;
                 }
                 string += match.rm_eo;
                 break;
@@ -111,8 +94,7 @@ bool tokenize(const char * string, json_token_t * tokens){
         }
     }
 
-    *tokens = (json_token_t){ .type = JSON_TOKEN_TYPE_INVALID };
-    return true;
+    return token_count;
 }
 
 uint64_t hash(const char * string) {
@@ -201,8 +183,8 @@ bool json_document_parse(const char * string, json_document_t * document){
         return false;
     }
 
-    bool result = tokenize(string, tokens);
-    if (!result){
+    int token_count = tokenize(string, tokens);
+    if (token_count < 0){
         free(tokens);
         return false;
     }
@@ -213,11 +195,9 @@ bool json_document_parse(const char * string, json_document_t * document){
         return false;
     }
 
-    uint32_t value_count;
-    uint32_t key_pair_count;
-    uint32_t object_count;
-    count_tokens(tokens, &value_count, &key_pair_count, &object_count); 
-
+    uint32_t value_count = token_count;
+    uint32_t key_pair_count = token_count / 4;
+    uint32_t object_count = token_count / 2;
     void * data_pointer = malloc(
         value_count * sizeof(json_value_t) +
         key_pair_count * sizeof(json_key_pair_t) +
