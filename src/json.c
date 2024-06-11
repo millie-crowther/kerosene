@@ -214,8 +214,7 @@ bool json_document_parse(const char * string, json_document_t * document){
     json_object_t * objects = (json_object_t *)(key_pairs + key_pair_count);
 
     json_token_t * token_pointer = tokens;
-    json_value_t * value_pointer = values;
-    json_value_t * root = parse_json_value(&token_pointer, &value_pointer);
+    json_value_t * root = parse_json_value(&token_pointer, &values);
     free(tokens);
 
     if (root == nullptr){
