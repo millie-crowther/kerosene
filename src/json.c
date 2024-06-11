@@ -43,7 +43,7 @@ json_token_regex_t regexes[JSON_TOKEN_TYPE_INVALID] = {
 };
 
 json_token_t * check_scope(json_token_t * tokens, uint32_t scope, json_token_t * parent, json_token_t * end){
-    for (; tokens < end && tokens != nullptr; tokens++){
+    for (; tokens != nullptr && tokens < end; tokens++){
         tokens->scope = scope;
         
         if (parent != nullptr && tokens->type < JSON_TOKEN_TYPE_VALUE_IDENTIFIER){
