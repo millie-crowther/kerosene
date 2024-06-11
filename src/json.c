@@ -201,8 +201,7 @@ bool json_document_parse(const char * string, json_document_t * document){
     uint32_t value_count = token_count;
     uint32_t object_count = token_count / 2;
     void * data_pointer = malloc(
-        value_count * sizeof(json_value_t) +
-        object_count * sizeof(json_object_t)
+        value_count * sizeof(json_value_t) + object_count * sizeof(json_object_t)
     );
 
     if (data_pointer == nullptr){
