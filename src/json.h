@@ -20,7 +20,7 @@ typedef struct json_array_t {
 } json_array_t;
 
 typedef struct json_bucket_t {
-    const json_value_t * key_pairs;
+    struct json_value_t * key_pairs;
     uint32_t length;
 } json_bucket_t;
 
