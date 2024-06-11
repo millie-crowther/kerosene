@@ -196,11 +196,9 @@ bool json_document_parse(const char * string, json_document_t * document){
     }
 
     uint32_t value_count = token_count;
-    uint32_t key_pair_count = token_count / 4;
     uint32_t object_count = token_count / 2;
     void * data_pointer = malloc(
         value_count * sizeof(json_value_t) +
-        key_pair_count * sizeof(json_key_pair_t) +
         object_count * sizeof(json_object_t)
     );
 
@@ -210,8 +208,7 @@ bool json_document_parse(const char * string, json_document_t * document){
     }
 
     json_value_t * values = data_pointer;
-    json_key_pair_t * key_pairs = (json_key_pair_t *)(values + value_count);
-    json_object_t * objects = (json_object_t *)(key_pairs + key_pair_count);
+    json_object_t * objects = (json_object_t *)(values + value_count);
 
     json_token_t * token_pointer = tokens;
     json_value_t * root = parse_json_value(&token_pointer, &values);
