@@ -19,13 +19,9 @@ typedef struct json_array_t {
     uint32_t length;
 } json_array_t;
 
-typedef struct json_key_pair_t {
-    const char * key;
-    struct json_value_t * value;
-} json_key_pair_t;
-
 typedef struct json_bucket_t {
-    json_key_pair_t * key_pairs;
+    const json_value_t * keys;
+    const json_value_t * values;
     uint32_t length;
 } json_bucket_t;
 
