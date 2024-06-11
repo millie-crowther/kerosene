@@ -124,6 +124,9 @@ json_value_t * parse_json_value(json_token_t ** tokens, json_value_t ** values){
     (*tokens)++;
 
     uint32_t length = token.children;
+    if (token.type == JSON_TOKEN_TYPE_OPEN_BRACE && length % 2 != 0){
+        return nullptr;
+    }
     json_value_t * elements = *values;
     (*values) += length;
 
