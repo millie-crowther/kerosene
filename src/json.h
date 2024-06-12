@@ -33,7 +33,7 @@ typedef struct json_value_t {
         double number;
         const char * string;
         json_array_t array;
-        json_key_pair_t ** object;
+        json_key_pair_t ** hash_map;
     };
 } json_value_t;
 
