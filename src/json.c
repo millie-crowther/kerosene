@@ -109,9 +109,8 @@ uint64_t hash(const json_value_t * object, const char * string) {
 }
 
 json_value_t * json_object_get(const json_value_t * object, const char * string){
-    json_hash_map_t * hash_map = object->hash_map;
-    uint64_t index = hash(object, string) % hash_map->length;
-    json_key_pair_t * start = hash_map.buckets[index];
+    json_hash_map_t * map = object->hash_map;
+    json_key_pair_t * start = map->buckets[hash(object, string) % map->length];
     
     for (json_key_pair_t * key_pair = start; key_pair != nullptr; key_pair = key_pair->next){
         if (key_pair->object == object && strcmp(string, key_pair->key) == 0){
