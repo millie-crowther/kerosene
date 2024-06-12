@@ -97,7 +97,7 @@ int tokenize(const char * string, json_token_t * tokens){
     return token_count;
 }
 
-uint64_t hash(const char * string) {
+uint64_t hash(const json_value_t * object, const char * string) {
     // see: http://www.cs.yorku.ca/~oz/hash.html
     uint64_t hash = 5381;
 
@@ -105,17 +105,20 @@ uint64_t hash(const char * string) {
         hash = ((hash << 5) + hash) + *string;
     }
 
-    return hash;
+    return hash ^ (uint64_t)(object);
 }
 
-json_value_t * json_object_get(const json_object_t * object, const char * string){
-    uint64_t index = hash(string) % JSON_OBJECT_BUCKETS_COUNT;
-    json_bucket_t bucket = object->buckets[index];
-    for (uint32_t i = 0; i < bucket.length; i++){
-        if (strcmp(string, bucket.key_pairs[i * 2].string) == 0){
-            return &bucket.key_pairs[i * 2 + 1];
+json_value_t * json_object_get(const json_value_t * object, const char * string){
+    json_hash_map_t * hash_map = object->hash_map;
+    uint64_t index = hash(object, string) % hash_map->length;
+    json_key_pair_t * start = hash_map.buckets[index];
+    
+    for (json_key_pair_t * key_pair = start; key_pair != nullptr; key_pair = key_pair->next){
+        if (key_pair->object == object && strcmp(string, key_pair->key) == 0){
+            return key_pair->value;
         }
     }
+    
     return nullptr;
 }
 
