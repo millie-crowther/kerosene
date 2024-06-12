@@ -5,31 +5,34 @@
 #include <string.h>
 
 typedef enum json_token_type_t {
-    // Tokens that correspond to JSON values
-    JSON_TOKEN_TYPE_NULL = 0,
-    JSON_TOKEN_TYPE_FALSE = 1,
-    JSON_TOKEN_TYPE_TRUE = 2,
-    JSON_TOKEN_TYPE_NUMBER = 3,
-    JSON_TOKEN_TYPE_STRING = 4,
-    JSON_TOKEN_TYPE_OPEN_BRACE = 5,
-    JSON_TOKEN_TYPE_OPEN_BRACKET = 6,
-    JSON_TOKEN_TYPE_VALUE_IDENTIFIER = 7,
-
-    // Tokens that do not directly correspond to a JSON value
-    JSON_TOKEN_TYPE_COLON = 8,
-    JSON_TOKEN_TYPE_COMMA = 9,
-    JSON_TOKEN_TYPE_CLOSE_BRACE = 10,
-    JSON_TOKEN_TYPE_CLOSE_BRACKET = 11,
-    JSON_TOKEN_TYPE_WHITESPACE = 12,
-    JSON_TOKEN_TYPE_INVALID = 13
+    JSON_TOKEN_TYPE_NULL,
+    JSON_TOKEN_TYPE_FALSE,
+    JSON_TOKEN_TYPE_TRUE,
+    JSON_TOKEN_TYPE_NUMBER,
+    JSON_TOKEN_TYPE_STRING,
+    JSON_TOKEN_TYPE_OPEN_BRACE,
+    JSON_TOKEN_TYPE_OPEN_BRACKET,
+    JSON_TOKEN_TYPE_COLON,
+    JSON_TOKEN_TYPE_COMMA,
+    JSON_TOKEN_TYPE_CLOSE_BRACE,
+    JSON_TOKEN_TYPE_CLOSE_BRACKET,
+    JSON_TOKEN_TYPE_WHITESPACE
 } json_token_type_t;
 
 typedef struct json_token_t {
     json_token_type_t type;
+    json_type_t json_type;
     const char * string;
-    uint32_t children;
-    uint32_t scope;
 } json_token_t;
+
+typedef struct json_parser_t {
+    json_token_t * tokens;
+    json_value_t * values;
+    json_value_t ** arrays;
+    json_key_pair_t ** buckets;
+    uint32_t buckets_length;
+    json_key_pair_t * key_pairs;
+} json_parser_t;
 
 typedef struct json_token_regex_t {
     json_token_type_t type;
@@ -38,35 +41,15 @@ typedef struct json_token_regex_t {
 } json_token_regex_t;
 
 json_token_regex_t regexes[JSON_TOKEN_TYPE_INVALID] = {
-    { .type = JSON_TOKEN_TYPE_TRUE, .regex_string = "^true" },
-    { .type = JSON_TOKEN_TYPE_INVALID }
+    { .type = JSON_TOKEN_TYPE_TRUE, .json_type = JSON_TYPE_BOOLEAN, .regex_string = "^true" }
 };
 
-json_token_t * check_scope(json_token_t * tokens, uint32_t scope, json_token_t * parent, json_token_t * end){
-    for (; tokens != nullptr && tokens < end; tokens++){
-        tokens->scope = scope;
-        
-        if (parent != nullptr && tokens->type < JSON_TOKEN_TYPE_VALUE_IDENTIFIER){
-            parent->children++;
-        }
-        
-        if (tokens->type == JSON_TOKEN_TYPE_OPEN_BRACE || tokens->type == JSON_TOKEN_TYPE_OPEN_BRACKET){
-            tokens = check_scope(tokens + 1, scope + 1, tokens, end);
-        } else if (tokens->type == JSON_TOKEN_TYPE_CLOSE_BRACE || tokens->type == JSON_TOKEN_TYPE_CLOSE_BRACKET){
-            return tokens;
-        }
-    }
-
-    return nullptr;
-}
-
 bool json_compile_regular_expressions(){
-    for (uint32_t i = 0; regexes[i].type != JSON_TOKEN_TYPE_INVALID; i++){
+    for (uint32_t i = 0; i < sizeof(regexes) / sizeof(regexes[0]); i++){
         if (regcomp(&regexes[i].regex, regexes[i].regex_string, REG_EXTENDED) != 0){
             return false;
         }
     }
-
     return true;
 }
 
@@ -139,6 +122,43 @@ json_key_pair_t json_object_insert(json_value_t * object, char * key, json_value
     document->key_pairs++;
 }
 
+json_value_t * parse_json_value(json_parser_t * parser){
+    json_token_t token = *(parser->tokens);
+    parser->tokens++;
+
+    json_value_t * result = parser->values;
+    result->type = token.json_type;
+    parser->values++;
+    if (token.type == JSON_TOKEN_TYPE_NULL){
+        
+    } else if (token.type == JSON_TOKEN_TYPE_FALSE || token.type == JSON_TOKEN_TYPE_TRUE){
+        result->boolean = token.type == JSON_TOKEN_TYPE_TRUE;
+    } else if (token.type == JSON_TOKEN_TYPE_NUMBER){
+        result->number = atof(token.string);
+    } else if (token.type == JSON_TOKEN_TYPE_STRING){
+        // TODO
+    } else if (token.type == JSON_TOKEN_TYPE_OPEN_BRACE){
+        // TODO
+    } else if (token.type == JSON_TOKEN_TYPE_OPEN_BRACKET){
+        result->array = (json_array_t){ .elements = parser->arrays };
+        
+        while (true){
+            json_token_t token = *(parser->tokens);
+            parser->tokens++;
+
+            if (token.type == JSON_TOKEN_TYPE_CLOSE_BRACKET){
+                break;
+            }
+
+            
+        }
+    } else {
+        return nullptr;
+    }
+    
+    return result;
+}
+
 json_value_t * parse_json_value(json_token_t ** tokens, json_value_t ** values){
     json_token_t token = **tokens;
     (*tokens)++;
@@ -208,12 +228,6 @@ bool json_document_parse(const char * string, json_document_t * document){
 
     int token_count = tokenize(string, tokens);
     if (token_count < 0){
-        free(tokens);
-        return false;
-    }
-
-    json_token_t * scope_check_result = check_scope(tokens, 0, nullptr, tokens + string_length);
-    if (scope_check_result == nullptr){
         free(tokens);
         return false;
     }
