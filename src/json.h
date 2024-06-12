@@ -26,6 +26,11 @@ typedef struct json_key_pair_t {
     struct json_key_pair_t * next;
 } json_key_pair_t;
 
+typedef struct json_hashmap_t {
+    json_key_pair_t ** buckets;
+    uint32_t length;
+} json_hashmap_t;
+
 typedef struct json_value_t {
     json_type_t type;
     union {
@@ -33,7 +38,7 @@ typedef struct json_value_t {
         double number;
         const char * string;
         json_array_t array;
-        json_key_pair_t ** hash_map;
+        json_hashmap_t * hash_map;
     };
 } json_value_t;
 
