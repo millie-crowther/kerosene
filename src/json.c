@@ -121,6 +121,20 @@ json_value_t * json_object_get(const json_value_t * object, const char * string)
     return nullptr;
 }
 
+json_key_pair_t json_object_insert(json_value_t * object, char * key, json_value_t * value, json_key_pair_t * key_pair){
+    json_hash_map_t * map = object->hash_map;
+    json_key_pair_t * next = map->buckets[hash(object, string) % map->length];
+    
+    *key_pair = (json_key_pair_t){
+        .key = key,
+        .value = value,
+        .object = object,
+        .next = next
+    };
+
+    map->buckets[index] = key_pair;
+}
+
 json_value_t * parse_json_value(json_token_t ** tokens, json_value_t ** values){
     json_token_t token = **tokens;
     (*tokens)++;
