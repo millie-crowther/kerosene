@@ -109,8 +109,9 @@ uint64_t hash(const json_value_t * object, const char * string) {
 }
 
 json_value_t * json_object_get(const json_value_t * object, const char * string){
-    json_hash_map_t * map = object->hash_map;
-    json_key_pair_t * start = map->buckets[hash(object, string) % map->length];
+    json_document_t * document = object->document;
+    uint64_t index = hash(object, string) % document->buckets_length;
+    json_key_pair_t * start = document->buckets[index];
     
     for (json_key_pair_t * key_pair = start; key_pair != nullptr; key_pair = key_pair->next){
         if (key_pair->object == object && strcmp(string, key_pair->key) == 0){
@@ -121,18 +122,21 @@ json_value_t * json_object_get(const json_value_t * object, const char * string)
     return nullptr;
 }
 
-json_key_pair_t json_object_insert(json_value_t * object, char * key, json_value_t * value, json_key_pair_t * key_pair){
-    json_hash_map_t * map = object->hash_map;
-    json_key_pair_t * next = map->buckets[hash(object, string) % map->length];
+json_key_pair_t json_object_insert(json_value_t * object, char * key, json_value_t * value){
+    json_document_t * document = object->document;
+    uint64_t index = hash(object, string) % document->buckets_length;
+    json_key_pair_t * next = document->buckets[index];
     
-    *key_pair = (json_key_pair_t){
+    json_key_pair_t * this = document->key_pairs;
+    *this = (json_key_pair_t){
         .key = key,
         .value = value,
         .object = object,
         .next = next
     };
 
-    map->buckets[index] = key_pair;
+    document->buckets[index] = this;
+    document->key_pairs++;
 }
 
 json_value_t * parse_json_value(json_token_t ** tokens, json_value_t ** values){
