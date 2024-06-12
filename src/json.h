@@ -41,13 +41,7 @@ typedef struct json_value_t {
 
 typedef struct json_document_t {
     void * data_pointer;
-    json_value_t * root;
-
-    json_value_t ** arrays;
-
-    json_key_pair_t ** buckets;
-    uint32_t buckets_length;
-    json_key_pair_t * key_pairs;
+    json_value_t * root
 } json_document_t;
 
 bool json_compile_regular_expressions();
