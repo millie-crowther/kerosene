@@ -40,7 +40,7 @@ typedef struct json_token_regex_t {
     regex_t regex;
 } json_token_regex_t;
 
-json_token_regex_t regexes[JSON_TOKEN_TYPE_INVALID] = {
+json_token_regex_t regexes[] = {
     { .type = JSON_TOKEN_TYPE_TRUE, .json_type = JSON_TYPE_BOOLEAN, .regex_string = "^true" }
 };
 
