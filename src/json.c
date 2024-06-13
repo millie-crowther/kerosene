@@ -155,7 +155,8 @@ json_value_t * parse_json_value(json_parser_t * parser){
     json_value_t * result = parser->values;
     result->type = parser->tokens->json_type;
     parser->values++;
-    
+
+    bool is_match_found = false;
     if (token.type == JSON_TOKEN_TYPE_NULL || token.type == JSON_TOKEN_TYPE_FALSE || token.type == JSON_TOKEN_TYPE_TRUE){
         result->boolean = token.type == JSON_TOKEN_TYPE_TRUE;
         return result;
@@ -165,14 +166,11 @@ json_value_t * parse_json_value(json_parser_t * parser){
     } else if (token.type == JSON_TOKEN_TYPE_STRING){
         // TODO
         return result;
-    } else if (token.type == JSON_TOKEN_TYPE_OPEN_BRACE){
-        // TODO
-        return result;
-    } else if (parse_json_array(parser, &result->array)){
-        return result;
     } 
+
+    is_match_found ||= parse_json_array(parser, &result->array);
     
-    return nullptr;
+    return is_match_found ? result : nullptr;
 }
 
 bool json_document_parse(const char * string, json_document_t * document){
