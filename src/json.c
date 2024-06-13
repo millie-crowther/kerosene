@@ -193,30 +193,6 @@ json_value_t * parse_json_value(json_token_t ** tokens, json_value_t ** values){
     } else if (token.type == JSON_TOKEN_TYPE_OPEN_BRACE){
         // TODO
     } else if (token.type == JSON_TOKEN_TYPE_OPEN_BRACKET){
-        for (uint32_t i = 0; i < length; i++){
-            json_value_t * element = parse_json_value(tokens, values);
-            if (element == nullptr){
-                return nullptr;
-            }
-            elements[i] = *element;
-
-            token = **tokens;
-            (*tokens)++;
-            if (
-                (i < length - 1 && token.type != JSON_TOKEN_TYPE_COMMA) ||
-                (i == length - 1 && token.type != JSON_TOKEN_TYPE_CLOSE_BRACKET) 
-            ){
-                return nullptr;
-            }
-        }
-        
-        result = (json_value_t){ 
-            .type = JSON_TYPE_ARRAY, 
-            .array = (json_array_t){
-                .elements = elements,
-                .length = length,
-            },
-        };
     } else {
         return nullptr;
     }
