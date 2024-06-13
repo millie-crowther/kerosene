@@ -56,11 +56,7 @@ bool json_compile_regular_expressions(){
 int tokenize(const char * string, json_token_t * tokens){
     int token_count = 0;
     while (*string != '\0'){
-        for (uint32_t i = 0;; i++){
-            if (regexes[i].type == JSON_TOKEN_TYPE_INVALID){
-                return -1;
-            }
-            
+        for (uint32_t i = 0; i < sizeof(regexes) / sizeof(regexes[0]); i++){   
             regmatch_t match;
             int result = regexec(&regexes[i].regex, string, 1, &match, 0);
             if (result == 0){
