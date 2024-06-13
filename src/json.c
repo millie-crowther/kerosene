@@ -129,20 +129,23 @@ json_value_t * parse_json_value(json_parser_t * parser){
     json_value_t * result = parser->values;
     result->type = token.json_type;
     parser->values++;
-    if (token.type == JSON_TOKEN_TYPE_NULL){
-        
-    } else if (token.type == JSON_TOKEN_TYPE_FALSE || token.type == JSON_TOKEN_TYPE_TRUE){
+    
+    if (token.type == JSON_TOKEN_TYPE_NULL || token.type == JSON_TOKEN_TYPE_FALSE || token.type == JSON_TOKEN_TYPE_TRUE){
         result->boolean = token.type == JSON_TOKEN_TYPE_TRUE;
+        return result;
     } else if (token.type == JSON_TOKEN_TYPE_NUMBER){
         result->number = atof(token.string);
+        return result;
     } else if (token.type == JSON_TOKEN_TYPE_STRING){
         // TODO
+        return result;
     } else if (token.type == JSON_TOKEN_TYPE_OPEN_BRACE){
         // TODO
+        return result;
     } else if (token.type == JSON_TOKEN_TYPE_OPEN_BRACKET){
         result->array = (json_array_t){ .elements = parser->arrays };
-
-        while (true){
+        
+        while (parser->tokens->type != JSON_TOKEN_TYPE_CLOSE_BRACKET){
             json_value_t * element = parse_json_value(parser);
             if (element == nullptr){
                 return nullptr;
@@ -154,16 +157,14 @@ json_value_t * parse_json_value(json_parser_t * parser){
             json_token_t next_token = *(parser->tokens);
             parser->tokens++;
             if (next_token.type == JSON_TOKEN_TYPE_CLOSE_BRACKET){
-                break;
+                return result;
             } else if (next_token.type != JSON_TOKEN_TYPE_COMMA){
                 return nullptr;
             }
         }
-    } else {
-        return nullptr;
-    }
+    } 
     
-    return result;
+    return nullptr;
 }
 
 json_value_t * parse_json_value(json_token_t ** tokens, json_value_t ** values){
