@@ -144,6 +144,36 @@ bool parse_json_array(json_parser_t * parser, json_array_t * array){
     return true;
 }
 
+bool parse_json_object(json_parser_t * parser, json_value_t * object){
+    if (parser->tokens->type != JSON_TOKEN_TYPE_OPEN_BRACE){
+        return false;
+    }
+    parser->tokens++;
+
+    while (true){
+        if (parser->tokens[0].type != JSON_TOKEN_TYPE_STRING || parser->tokens[1].type != JSON_TOKEN_TYPE_COLON){
+            return false;
+        }
+        parser->tokens += 2;
+
+        json_value_t * value = parse_json_value(parser);
+        // TODO: insert
+        if (value == nullptr){
+            return false;
+        } else if (parser->tokens->type != JSON_TOKEN_TYPE_COMMA){
+            break;
+        }
+        parser->tokens++;
+    }
+
+    if (parser->tokens->type != JSON_TOKEN_TYPE_CLOSE_BRACE){
+        return false;
+    }
+    
+    parser->tokens++;
+    return true;
+}
+
 json_value_t * parse_json_value(json_parser_t * parser){
     json_value_t * result = parser->values;
     result->type = parser->tokens->json_type;
