@@ -123,32 +123,37 @@ json_key_pair_t json_object_insert(json_value_t * object, char * key, json_value
 }
 
 bool parse_json_array(json_parser_t * parser, json_array_t * array){
-    *array = (json_array_t){ .elements = parser->arrays };
-    
-    while (parser->tokens->type != JSON_TOKEN_TYPE_CLOSE_BRACKET){
-        array->elements[array->length] = parse_json_value(parser);
-        if (array->elements[array->length] == nullptr){
-            return false;
-        }
-        array->length++;
-        parser->arrays++;
-
-        if (parser->tokens->type == JSON_TOKEN_TYPE_COMMA){
-            parser->tokens++;
-        } else if (parser->tokens->type != JSON_TOKEN_TYPE_CLOSE_BRACKET){
-            return false;
-        }
+    if (parser->tokens->type != JSON_TOKEN_TYPE_OPEN_BRACKET){
+        return false;
     }
+    parser->tokens++;
+    *array = (json_array_t){ .elements = parser->arrays };
+
+    uint32_t i;
+    for (i = 0;; i++){
+        array->elements[i] = parse_json_value(parser);
+        if (array->elements[i] == nullptr){
+            return false;
+        }
+        if (parser->tokens->type != JSON_TOKEN_TYPE_COMMA){
+            break;
+        }
+        parser->tokens++;
+    } 
+
+    if (parser->tokens->type != JSON_TOKEN_TYPE_CLOSE_BRACKET){
+        return false;
+    }
+    
+    array->length = i;
+    parser->arrays += i;
     parser->tokens++;
     return true;
 }
 
 json_value_t * parse_json_value(json_parser_t * parser){
-    json_token_t token = *(parser->tokens);
-    parser->tokens++;
-
     json_value_t * result = parser->values;
-    result->type = token.json_type;
+    result->type = parser->tokens->json_type;
     parser->values++;
     
     if (token.type == JSON_TOKEN_TYPE_NULL || token.type == JSON_TOKEN_TYPE_FALSE || token.type == JSON_TOKEN_TYPE_TRUE){
@@ -163,10 +168,7 @@ json_value_t * parse_json_value(json_parser_t * parser){
     } else if (token.type == JSON_TOKEN_TYPE_OPEN_BRACE){
         // TODO
         return result;
-    } else if (token.type == JSON_TOKEN_TYPE_OPEN_BRACKET){
-        if (!parse_json_array(parser, &result->array){
-            return nullptr;
-        }
+    } else if (parse_json_array(parser, &result->array)){
         return result;
     } 
     
