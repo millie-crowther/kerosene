@@ -123,29 +123,28 @@ json_key_pair_t json_object_insert(json_value_t * object, char * key, json_value
 }
 
 bool parse_json_array(json_parser_t * parser, json_array_t * array){
-    json_token_t * tokens = parser->tokens;
-    if (tokens->type != JSON_TOKEN_TYPE_OPEN_BRACKET){
+    if (parser->tokens->type != JSON_TOKEN_TYPE_OPEN_BRACKET){
         return false;
     }
-    tokens++;
+    parser->tokens++;
     
     array->elements = parser->arrays;
     for (array->length = 0;; array->length++){
         array->elements[array->length] = parse_json_value(parser);
         if (array->elements[array->length] == nullptr){
             return false;
-        } else if (tokens->type != JSON_TOKEN_TYPE_COMMA){
+        } else if (parser->tokens->type != JSON_TOKEN_TYPE_COMMA){
             break;
         }
-        tokens++;
+        parser->tokens++;
     } 
 
-    if (tokens->type != JSON_TOKEN_TYPE_CLOSE_BRACKET){
+    if (parser->tokens->type != JSON_TOKEN_TYPE_CLOSE_BRACKET){
         return false;
     }
     
     parser->arrays += array->length;
-    parser->tokens = tokens + 1;
+    parser->tokens++;
     return true;
 }
 
@@ -154,21 +153,19 @@ json_value_t * parse_json_value(json_parser_t * parser){
     result->type = parser->tokens->json_type;
     parser->values++;
 
-    bool is_match_found = false;
     if (token.type == JSON_TOKEN_TYPE_NULL || token.type == JSON_TOKEN_TYPE_FALSE || token.type == JSON_TOKEN_TYPE_TRUE){
         result->boolean = token.type == JSON_TOKEN_TYPE_TRUE;
-        is_match_found = true;
     } else if (token.type == JSON_TOKEN_TYPE_NUMBER){
         result->number = atof(token.string);
         is_match_found = true;
     } else if (token.type == JSON_TOKEN_TYPE_STRING){
         // TODO
         is_match_found = true;
-    } else if (token.type == JSON_TOKEN_TYPE_OPEN_BRACKET){
-        is_match_found = parse_json_array(parser, &result->array);
+    } else if (parse_json_array(parser, &result->array)){
+        return result;
     } 
         
-    return is_match_found ? result : nullptr;
+    return nullptr;
 }
 
 bool json_document_parse(const char * string, json_document_t * document){
