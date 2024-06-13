@@ -126,11 +126,10 @@ bool parse_json_array(json_parser_t * parser, json_array_t * array){
     *array = (json_array_t){ .elements = parser->arrays };
     
     while (parser->tokens->type != JSON_TOKEN_TYPE_CLOSE_BRACKET){
-        json_value_t * element = parse_json_value(parser);
-        if (element == nullptr){
+        array->elements[array->length] = parse_json_value(parser);
+        if (array->elements[array->length] == nullptr){
             return false;
         }
-        array->elements[result->array->length] = element;
         array->length++;
         parser->arrays++;
 
