@@ -159,17 +159,16 @@ json_value_t * parse_json_value(json_parser_t * parser){
     bool is_match_found = false;
     if (token.type == JSON_TOKEN_TYPE_NULL || token.type == JSON_TOKEN_TYPE_FALSE || token.type == JSON_TOKEN_TYPE_TRUE){
         result->boolean = token.type == JSON_TOKEN_TYPE_TRUE;
-        return result;
+        is_match_found = true;
     } else if (token.type == JSON_TOKEN_TYPE_NUMBER){
         result->number = atof(token.string);
-        return result;
+        is_match_found = true;
     } else if (token.type == JSON_TOKEN_TYPE_STRING){
         // TODO
-        return result;
+        is_match_found = true;
     } 
-
+        
     is_match_found ||= parse_json_array(parser, &result->array);
-    
     return is_match_found ? result : nullptr;
 }
 
