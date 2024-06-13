@@ -128,12 +128,11 @@ bool parse_json_array(json_parser_t * parser, json_array_t * array){
         return false;
     }
     tokens++;
-    *array = (json_array_t){ .elements = parser->arrays };
-
-    uint32_t i;
-    for (i = 0;; i++){
-        array->elements[i] = parse_json_value(parser);
-        if (array->elements[i] == nullptr){
+    
+    array->elements = parser->arrays;
+    for (array->length = 0;; array->length++){
+        array->elements[array->length] = parse_json_value(parser);
+        if (array->elements[array->length] == nullptr){
             return false;
         } else if (tokens->type != JSON_TOKEN_TYPE_COMMA){
             break;
@@ -145,8 +144,7 @@ bool parse_json_array(json_parser_t * parser, json_array_t * array){
         return false;
     }
     
-    array->length = i;
-    parser->arrays += i;
+    parser->arrays += array->length;
     parser->tokens = tokens + 1;
     return true;
 }
