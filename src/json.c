@@ -135,8 +135,7 @@ bool parse_json_array(json_parser_t * parser, json_array_t * array){
         array->elements[i] = parse_json_value(parser);
         if (array->elements[i] == nullptr){
             return false;
-        }
-        if (tokens->type != JSON_TOKEN_TYPE_COMMA){
+        } else if (tokens->type != JSON_TOKEN_TYPE_COMMA){
             break;
         }
         tokens++;
