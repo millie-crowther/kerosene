@@ -143,7 +143,7 @@ json_value_t * parse_json_value(json_parser_t * parser){
         result->array = (json_array_t){ .elements = parser->arrays };
 
         while (true){
-            json_value_t * element = = parse_json_value(parser);
+            json_value_t * element = parse_json_value(parser);
             if (element == nullptr){
                 return nullptr;
             }
