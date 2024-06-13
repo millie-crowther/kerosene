@@ -123,10 +123,11 @@ json_key_pair_t json_object_insert(json_value_t * object, char * key, json_value
 }
 
 bool parse_json_array(json_parser_t * parser, json_array_t * array){
-    if (parser->tokens->type != JSON_TOKEN_TYPE_OPEN_BRACKET){
+    json_token_t * tokens = parser->tokens;
+    if (tokens->type != JSON_TOKEN_TYPE_OPEN_BRACKET){
         return false;
     }
-    parser->tokens++;
+    tokens++;
     *array = (json_array_t){ .elements = parser->arrays };
 
     uint32_t i;
@@ -138,16 +139,16 @@ bool parse_json_array(json_parser_t * parser, json_array_t * array){
         if (parser->tokens->type != JSON_TOKEN_TYPE_COMMA){
             break;
         }
-        parser->tokens++;
+        tokens++;
     } 
 
-    if (parser->tokens->type != JSON_TOKEN_TYPE_CLOSE_BRACKET){
+    if (tokens->type != JSON_TOKEN_TYPE_CLOSE_BRACKET){
         return false;
     }
     
     array->length = i;
     parser->arrays += i;
-    parser->tokens++;
+    parser->tokens = tokens + 1;
     return true;
 }
 
