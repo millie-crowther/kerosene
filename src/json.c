@@ -145,26 +145,23 @@ json_value_t * parse_json_value(json_parser_t * parser){
     } else if (token.type == JSON_TOKEN_TYPE_OPEN_BRACKET){
         result->array = (json_array_t){ .elements = parser->arrays };
         
-        while (true){
-            if (parser->tokens->type == JSON_TOKEN_TYPE_CLOSE_BRACKET){
-                parser->tokens++;
-                return result;
-            } else {
-                json_value_t * element = parse_json_value(parser);
-                if (element == nullptr){
-                    return nullptr;
-                }
-                result->array->elements[result->array->length] = element;
-                result->array->length++;
-                parser->arrays++;
+        while (parser->tokens->type != JSON_TOKEN_TYPE_CLOSE_BRACKET){
+            json_value_t * element = parse_json_value(parser);
+            if (element == nullptr){
+                return nullptr;
+            }
+            result->array->elements[result->array->length] = element;
+            result->array->length++;
+            parser->arrays++;
 
-                if (parser->tokens->type == JSON_TOKEN_TYPE_COMMA){
-                    parser->tokens++;
-                } else if (parser->tokens->type != JSON_TOKEN_TYPE_CLOSE_BRACKET){
-                    return nullptr;
-                }
-            } 
+            if (parser->tokens->type == JSON_TOKEN_TYPE_COMMA){
+                parser->tokens++;
+            } else if (parser->tokens->type != JSON_TOKEN_TYPE_CLOSE_BRACKET){
+                return nullptr;
+            }
         }
+        parser->tokens++;
+        return result;
     } 
     
     return nullptr;
