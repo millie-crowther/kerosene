@@ -158,53 +158,16 @@ json_value_t * parse_json_value(json_parser_t * parser){
                 result->array->length++;
                 parser->arrays++;
 
-                if (
-                    parser->tokens->type != JSON_TOKEN_TYPE_COMMA &&
-                    parser->tokens->type != JSON_TOKEN_TYPE_CLOSE_BRACKET
-                ){
+                if (parser->tokens->type == JSON_TOKEN_TYPE_COMMA){
+                    parser->tokens++;
+                } else if (parser->tokens->type != JSON_TOKEN_TYPE_CLOSE_BRACKET){
                     return nullptr;
                 }
-                parser->tokens++;
             } 
         }
     } 
     
     return nullptr;
-}
-
-json_value_t * parse_json_value(json_token_t ** tokens, json_value_t ** values){
-    json_token_t token = **tokens;
-    (*tokens)++;
-
-    uint32_t length = token.children;
-    if (token.type == JSON_TOKEN_TYPE_OPEN_BRACE && length % 2 != 0){
-        return nullptr;
-    }
-    json_value_t * elements = *values;
-    (*values) += length;
-
-    json_value_t result;
-    
-    if (token.type == JSON_TOKEN_TYPE_NULL){
-        result = (json_value_t){ .type = JSON_TYPE_NULL };
-    } else if (token.type == JSON_TOKEN_TYPE_FALSE || token.type == JSON_TOKEN_TYPE_TRUE){
-        result = (json_value_t){ 
-            .type = JSON_TYPE_BOOLEAN,
-            .boolean = token.type == JSON_TOKEN_TYPE_TRUE,
-        };
-    } else if (token.type == JSON_TOKEN_TYPE_NUMBER){
-        result = (json_value_t){ .type = JSON_TYPE_NUMBER, .number = atof(token.string) };
-    } else if (token.type == JSON_TOKEN_TYPE_STRING){
-        // TODO
-    } else if (token.type == JSON_TOKEN_TYPE_OPEN_BRACE){
-        // TODO
-    } else if (token.type == JSON_TOKEN_TYPE_OPEN_BRACKET){
-    } else {
-        return nullptr;
-    }
-
-    **values = result;
-    return *values;
 }
 
 bool json_document_parse(const char * string, json_document_t * document){
