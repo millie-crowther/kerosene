@@ -164,9 +164,10 @@ json_value_t * parse_json_value(json_parser_t * parser){
     } else if (token.type == JSON_TOKEN_TYPE_STRING){
         // TODO
         is_match_found = true;
+    } else if (token.type == JSON_TOKEN_TYPE_OPEN_BRACKET){
+        is_match_found = parse_json_array(parser, &result->array);
     } 
         
-    is_match_found ||= parse_json_array(parser, &result->array);
     return is_match_found ? result : nullptr;
 }
 
