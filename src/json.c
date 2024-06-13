@@ -122,6 +122,28 @@ json_key_pair_t json_object_insert(json_value_t * object, char * key, json_value
     document->key_pairs++;
 }
 
+bool parse_json_array(json_parser_t * parser, json_array_t * array){
+    *array = (json_array_t){ .elements = parser->arrays };
+    
+    while (parser->tokens->type != JSON_TOKEN_TYPE_CLOSE_BRACKET){
+        json_value_t * element = parse_json_value(parser);
+        if (element == nullptr){
+            return false;
+        }
+        array->elements[result->array->length] = element;
+        array->length++;
+        parser->arrays++;
+
+        if (parser->tokens->type == JSON_TOKEN_TYPE_COMMA){
+            parser->tokens++;
+        } else if (parser->tokens->type != JSON_TOKEN_TYPE_CLOSE_BRACKET){
+            return false;
+        }
+    }
+    parser->tokens++;
+    return true;
+}
+
 json_value_t * parse_json_value(json_parser_t * parser){
     json_token_t token = *(parser->tokens);
     parser->tokens++;
@@ -143,24 +165,9 @@ json_value_t * parse_json_value(json_parser_t * parser){
         // TODO
         return result;
     } else if (token.type == JSON_TOKEN_TYPE_OPEN_BRACKET){
-        result->array = (json_array_t){ .elements = parser->arrays };
-        
-        while (parser->tokens->type != JSON_TOKEN_TYPE_CLOSE_BRACKET){
-            json_value_t * element = parse_json_value(parser);
-            if (element == nullptr){
-                return nullptr;
-            }
-            result->array->elements[result->array->length] = element;
-            result->array->length++;
-            parser->arrays++;
-
-            if (parser->tokens->type == JSON_TOKEN_TYPE_COMMA){
-                parser->tokens++;
-            } else if (parser->tokens->type != JSON_TOKEN_TYPE_CLOSE_BRACKET){
-                return nullptr;
-            }
+        if (!parse_json_array(parser, &result->array){
+            return nullptr;
         }
-        parser->tokens++;
         return result;
     } 
     
