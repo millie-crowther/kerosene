@@ -14,4 +14,4 @@ RUN make
 RUN pip install -r requirements.txt
 RUN python main.py
 
-CMD ./simorgh
+CMD ./kerosene
